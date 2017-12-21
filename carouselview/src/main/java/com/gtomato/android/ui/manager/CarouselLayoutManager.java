@@ -7,8 +7,10 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -750,16 +752,21 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager {
 	@Override
 	public void smoothScrollToPosition(final RecyclerView recyclerView, final RecyclerView.State state,
 	                                   int position) {
-//		LinearSmoothScroller linearSmoothScroller =
-//				new LinearSmoothScroller(recyclerView.getContext()) {
-//					@Override
-//					public PointF computeScrollVectorForPosition(int targetPosition) {
-//						return CarouselLayoutManager.this
-//								.computeScrollVectorForPosition(targetPosition);
-//					}
-//				};
-//		linearSmoothScroller.setTargetPosition(position);
-//		startSmoothScroll(linearSmoothScroller);
+		LinearSmoothScroller linearSmoothScroller =
+				new LinearSmoothScroller(recyclerView.getContext()) {
+					@Override
+					public PointF computeScrollVectorForPosition(int targetPosition) {
+						return CarouselLayoutManager.this
+								.computeScrollVectorForPosition(targetPosition);
+					}
+
+					@Override
+					protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+						return 25f / displayMetrics.densityDpi;
+					}
+				};
+		linearSmoothScroller.setTargetPosition(position);
+		startSmoothScroll(linearSmoothScroller);
 		log("smoothScrollToPosition " + position + " " + recyclerView);
 		int minScrollOffset = Integer.MAX_VALUE;
 		final int nChilds = getItemCount();
